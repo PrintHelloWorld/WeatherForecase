@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.bam.weatherforecast.R;
 import com.bam.weatherforecast.weather.Current;
+import com.bam.weatherforecast.weather.Forecast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,7 +34,7 @@ public class MainActivity extends Activity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private Current mCurrent;
+    private Forecast mForecast;
 
     @BindView(R.id.timeLabel) TextView mTimeLabel;
     @BindView(R.id.temperatureLabel) TextView mTemperatureLabel;
@@ -101,7 +102,7 @@ public class MainActivity extends Activity {
                         String jsonData = response.body().string();
                         Log.v(TAG, jsonData);
                         if (response.isSuccessful()) {
-                            mCurrent = getCurrentDetails(jsonData);
+                            mForecast = parseForecastDetails(jsonData);
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -133,13 +134,20 @@ public class MainActivity extends Activity {
     }
 
     private void updateDisplay() {
-        mTemperatureLabel.setText(String.valueOf(mCurrent.getTemp()));
-        mTimeLabel.setText("At " + mCurrent.getFormattedTime() + " it will be");
-        mHumidityValue.setText(String.valueOf(mCurrent.getHumidity()));
-        mPrecipValue.setText(String.valueOf(mCurrent.getPrecipChange() + "%"));
-        mSummaryLabel.setText(mCurrent.getSummary());
-        Drawable drawable = ContextCompat.getDrawable(this, mCurrent.getIconId());
+        Current current = mForecast.getCurrent();
+        mTemperatureLabel.setText(String.valueOf(current.getTemp()));
+        mTimeLabel.setText("At " + current.getFormattedTime() + " it will be");
+        mHumidityValue.setText(String.valueOf(current.getHumidity()));
+        mPrecipValue.setText(String.valueOf(current.getPrecipChange() + "%"));
+        mSummaryLabel.setText(current.getSummary());
+        Drawable drawable = ContextCompat.getDrawable(this, current.getIconId());
         mIconImageView.setImageDrawable(drawable);
+    }
+
+    private Forecast parseForecastDetails(String jsonData) throws JSONException {
+        Forecast forecast = new Forecast();
+        forecast.setCurrent(getCurrentDetails(jsonData));
+        return forecast;
     }
 
     private Current getCurrentDetails(String jsonData)
