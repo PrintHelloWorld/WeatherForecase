@@ -1,4 +1,4 @@
-package com.bam.weatherforecast;
+package com.bam.weatherforecast.ui;
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
@@ -12,6 +12,9 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.bam.weatherforecast.R;
+import com.bam.weatherforecast.weather.Current;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,7 +33,7 @@ public class MainActivity extends Activity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private CurrentWeather mCurrentWeather;
+    private Current mCurrent;
 
     @BindView(R.id.timeLabel) TextView mTimeLabel;
     @BindView(R.id.temperatureLabel) TextView mTemperatureLabel;
@@ -98,7 +101,7 @@ public class MainActivity extends Activity {
                         String jsonData = response.body().string();
                         Log.v(TAG, jsonData);
                         if (response.isSuccessful()) {
-                            mCurrentWeather = getCurrentDetails(jsonData);
+                            mCurrent = getCurrentDetails(jsonData);
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -130,28 +133,28 @@ public class MainActivity extends Activity {
     }
 
     private void updateDisplay() {
-        mTemperatureLabel.setText(String.valueOf(mCurrentWeather.getTemp()));
-        mTimeLabel.setText("At " + mCurrentWeather.getFormattedTime() + " it will be");
-        mHumidityValue.setText(String.valueOf(mCurrentWeather.getHumidity()));
-        mPrecipValue.setText(String.valueOf(mCurrentWeather.getPrecipChange() + "%"));
-        mSummaryLabel.setText(mCurrentWeather.getSummary());
-        Drawable drawable = ContextCompat.getDrawable(this, mCurrentWeather.getIconId());
+        mTemperatureLabel.setText(String.valueOf(mCurrent.getTemp()));
+        mTimeLabel.setText("At " + mCurrent.getFormattedTime() + " it will be");
+        mHumidityValue.setText(String.valueOf(mCurrent.getHumidity()));
+        mPrecipValue.setText(String.valueOf(mCurrent.getPrecipChange() + "%"));
+        mSummaryLabel.setText(mCurrent.getSummary());
+        Drawable drawable = ContextCompat.getDrawable(this, mCurrent.getIconId());
         mIconImageView.setImageDrawable(drawable);
     }
 
-    private CurrentWeather getCurrentDetails(String jsonData)
+    private Current getCurrentDetails(String jsonData)
             throws JSONException {
         JSONObject forecast = new JSONObject(jsonData);
         JSONObject currently = forecast.getJSONObject("currently");
-        CurrentWeather currentWeather = new CurrentWeather();
-        currentWeather.setHumidity(currently.getDouble("humidity"));
-        currentWeather.setTimeZone(forecast.getString("timezone"));
-        currentWeather.setTime(currently.getLong("time"));
-        currentWeather.setIcon(currently.getString("icon"));
-        currentWeather.setPrecipChange(currently.getDouble("precipProbability"));
-        currentWeather.setSummary(currently.getString("summary"));
-        currentWeather.setTemp(currently.getDouble("temperature"));
-        return currentWeather;
+        Current current = new Current();
+        current.setHumidity(currently.getDouble("humidity"));
+        current.setTimeZone(forecast.getString("timezone"));
+        current.setTime(currently.getLong("time"));
+        current.setIcon(currently.getString("icon"));
+        current.setPrecipChange(currently.getDouble("precipProbability"));
+        current.setSummary(currently.getString("summary"));
+        current.setTemp(currently.getDouble("temperature"));
+        return current;
     }
 
     private boolean isNetworkAvailable() {
