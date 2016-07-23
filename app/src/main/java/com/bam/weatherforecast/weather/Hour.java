@@ -5,7 +5,7 @@ public class Hour {
     private String mSummary;
     private double mTemperature;
     private String mIcon;
-    private String mTimeZone;
+    private String mTimezone;
 
     public long getTime() {
         return mTime;
@@ -39,11 +39,11 @@ public class Hour {
         mIcon = icon;
     }
 
-    public String getTimeZone() {
-        return mTimeZone;
+    public String getTimezone() {
+        return mTimezone;
     }
 
-    public void setTimeZone(String timeZone) {
-        mTimeZone = timeZone;
+    public void setTimezone(String timezone) {
+        mTimezone = timezone;
     }
 }
